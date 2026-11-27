@@ -55,10 +55,10 @@
 
 ### 2. 在 Codex 对话中安装
 
-把下面这行复制到刚打开的**项目对话框**并发送。
+把下面这行复制到刚打开的**项目对话框**并发送。仓库名为 `speech-emotion-dataset-skill`，安装后在 Codex 中用 `$speech-emotion-eval` 调用。
 
 ```text
-$skill-installer 请从 https://github.com/Xiang-mira/speech-emotion-eval-skill/tree/main/skills/speech-emotion-eval 安装到当前项目。使用安装器的 --dest .agents/skills 参数，安装后读取 .agents/skills/speech-emotion-eval/SKILL.md，确认名称是 speech-emotion-eval。
+$skill-installer 请从 https://github.com/Xiang-mira/speech-emotion-dataset-skill/tree/main/skills/speech-emotion-eval 安装到当前项目。使用安装器的 --dest .agents/skills 参数，安装后读取 .agents/skills/speech-emotion-eval/SKILL.md，确认名称是 speech-emotion-eval。
 ```
 
 安装成功的标志是**自己的项目文件夹**中出现 `.agents/skills/speech-emotion-eval/SKILL.md`。在同一项目开一个新对话，发送下一步的需求即可。
