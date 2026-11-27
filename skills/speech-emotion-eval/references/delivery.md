@@ -2,7 +2,7 @@
 
 ## 项目输入
 
-`collection.csv` 使用带表头的 UTF-8 CSV。一行对应一个样本，带逗号或换行的文本按标准 CSV 引号规则写入。初次接收其他表格，先按含义映射已有列，保留原文件。
+`collection.csv` 使用带表头的 UTF-8 CSV。给录制人用 Excel 打开的中文清单，推荐写成带 BOM 的 UTF-8（Python 编码名为 `utf-8-sig`）。一行对应一个样本，带逗号或换行的文本按标准 CSV 引号规则写入。初次接收其他表格，先按含义映射已有列，保留原文件。
 
 | 字段 | 内容 |
 |---|---|
@@ -45,7 +45,7 @@
 
 若接收端使用另一套标签，可加 `label_map` 指定每个中文标签的目标值。`audio_base: "manifest"` 表示音频路径相对输出清单。`omit_empty: true` 省略空的可选字段。接收端若要求最长时长或多声道必须选通道，可配置 `audio_rules`，例如 `{"max_seconds":30,"require_channel_for_multichannel":true}`，并映射 `channel`（从零开始的整数）。时长与通道设置取决于接收端。程序按完整清单检查音频、有效标签及对照关系，生成后回读 JSONL。文件、人工定稿和源清单统一按样本编号关联。缺音频、无标签或配对不完整时先修复或明确重建正式批次，再导出。
 
-只在当前项目的 `.agents/skills/` 安装了技能时，在该项目根目录执行 `python .agents/skills/speech-emotion-eval/scripts/pipeline.py check --project my-first-eval`，将 `my-first-eval` 换成实际清单目录。
+只在当前项目的 `.agents/skills/` 安装了技能时，在该项目根目录执行 `py -3 .agents/skills/speech-emotion-eval/scripts/pipeline.py check --project my-first-eval`，将 `my-first-eval` 换成实际清单目录。该命令适用于 Windows，macOS 或 Linux 将开头的 `py -3` 换成 `python3`。
 
 下载了完整仓库时，从仓库根目录执行下列命令，将 `PROJECT` 换为当前清单目录。
 

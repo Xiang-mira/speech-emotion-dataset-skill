@@ -47,20 +47,20 @@
 把下面这行复制到刚打开的**项目对话框**并发送。
 
 ```text
-$skill-installer 请从 https://github.com/Xiang-mira/speech-emotion-eval-skill/tree/main/skills/speech-emotion-eval 安装这个 Skill 到当前项目的 .agents/skills 目录，并确认能找到 .agents/skills/speech-emotion-eval/SKILL.md。
+$skill-installer 请从 https://github.com/Xiang-mira/speech-emotion-eval-skill/tree/main/skills/speech-emotion-eval 安装到当前项目。使用安装器的 --dest .agents/skills 参数，安装后读取 .agents/skills/speech-emotion-eval/SKILL.md，确认名称是 speech-emotion-eval。
 ```
 
-安装完成后，在同一项目开一个新对话，输入 `$speech-emotion-eval` 即可选择技能。如果没有出现，先确认上述路径能打开，再重启 Codex。
+安装成功的标志是**自己的项目文件夹**中出现 `.agents/skills/speech-emotion-eval/SKILL.md`。在同一项目开一个新对话，发送下一步的需求即可。
 
-也可以在本仓库首页选择 **Code → Download ZIP**，解压后将整个 `skills/speech-emotion-eval` 文件夹复制到项目的 `.agents/skills/` 下。两种方式的安装位置相同。[Codex 技能使用说明](https://developers.openai.com/codex/skills/)
+**手动安装。** 如果对话内安装失败，或项目里找不到上述文件，可以在本仓库首页选择 **Code → Download ZIP** 并解压。在自己的项目文件夹中新建 `.agents` 文件夹，再在里面新建 `skills` 文件夹。把解压目录中的 `skills/speech-emotion-eval` 整个复制进去，确认入口路径与上面一致。若新对话仍找不到技能，重启 Codex 后重新打开这个项目。[Codex 技能使用说明](https://developers.openai.com/codex/skills/)
 
 ### 3. 一句话生成第一份清单
 
-在同一项目的对话框里直接发送以下需求。以后可替换要测的场景、情绪和数量。
+将下面整行复制到新对话。开头的 `$speech-emotion-eval` 指定已安装的技能，后半句写自己的场景、情绪与数量。
 
-> 请在本项目的 my-first-eval 目录生成家庭语音助手采录清单：灯光状态和物品位置各一条中性，再各做一组同人同句的开心、惊讶对照，写好录制文本和表演提示，并核验配额与配对。
+> $speech-emotion-eval 请在本项目的 my-first-eval 目录生成家庭语音助手采录清单，灯光状态和物品位置各一条中性，再各做一组同人同句的开心、惊讶对照，写好录制文本和表演提示，并核验配额与配对。
 
-完成后用 Excel 或其他表格软件打开 `my-first-eval/collection.csv`，即可按行分派录制任务。同目录的 `config.json` 记录标签与配额。新生成的句子可以变化，样本数量和配对关系应符合需求。
+完成后，在项目中打开 `my-first-eval/collection.csv`，每行就是一条录制任务。录制人只读 `text`，按 `intended_label` 的语气和 `cue` 的提示表演，再按 `audio` 给出的路径保存 WAV。相同 `pair_id` 的两行由同一人录制。Excel 中若出现中文乱码，可用「数据 → 自文本/CSV」按 UTF-8 导入。同目录的 `config.json` 记录这次需求的标签与配额。
 
 需要自行复验时，在 `voice-eval-work` 项目根目录运行下面的命令。macOS 或 Linux 将开头的 `py -3` 换为 `python3`。
 
@@ -68,7 +68,7 @@ $skill-installer 请从 https://github.com/Xiang-mira/speech-emotion-eval-skill/
 py -3 .agents/skills/speech-emotion-eval/scripts/pipeline.py check --project my-first-eval
 ```
 
-结果中应看到 `ok: true`、`records: 6`、`unique_texts: 4` 和 `pairs: 2`。之后需要试听或组织双人听审时，再下载完整仓库，按下一节启动网页。
+对上面的示例，核验应返回 `ok: true`、`records: 6`、`unique_texts: 4`、`pairs: 2`。换需求后，分别对照新配额检查任务数、不同文本数和配对组数。例如每个场景再加一条独立的中性表达，三项就变成 8、6、2。录制前即可完成这一步。拿到 WAV 后，如需组织双人听审，再按下一节启动网页。
 
 ## 试用听审网页
 
