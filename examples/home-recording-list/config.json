@@ -1,0 +1,13 @@
+{
+  "labels": ["中性", "开心", "惊讶"],
+  "total_quota": 6,
+  "scene_quotas": {"灯光状态": 3, "物品位置": 3},
+  "group_quotas": {"中性": 2, "同句对照": 4},
+  "label_quotas": {"中性": {"中性": 2}, "同句对照": {"开心": 2, "惊讶": 2}},
+  "gold_quotas": {"中性": {"中性": 2}},
+  "new_recording_groups": ["中性", "同句对照"],
+  "pair_groups": ["同句对照"],
+  "pair_combinations": [["开心", "惊讶"], ["开心", "惊讶"]],
+  "require_pair_target_labels": true,
+  "forbid_label_words": true
+}

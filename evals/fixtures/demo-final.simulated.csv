@@ -1,0 +1,7 @@
+sample_id,human_label,initial_disagreement,version,quality
+L01,中性,0,simulated-v1,pass
+L02A,惊讶,1,simulated-v2,pass
+L02B,开心,0,simulated-v1,pass
+K01,中性,0,simulated-v1,pass
+K02A,开心,0,simulated-v1,pass
+K02B,惊讶,0,simulated-v1,pass

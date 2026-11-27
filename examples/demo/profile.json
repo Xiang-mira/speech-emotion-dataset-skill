@@ -1,0 +1,14 @@
+{
+  "fields": {
+    "sample_id": "sample_id",
+    "audio": "audio",
+    "human_label": "human_label",
+    "intended_label": "intended_label",
+    "pair_id": "pair_id",
+    "speaker_id": "speaker_id"
+  },
+  "required": ["sample_id", "audio", "human_label"],
+  "label_map": {"中性":"neutral", "开心":"happy", "惊讶":"surprised"},
+  "omit_empty": true,
+  "audio_base": "manifest"
+}

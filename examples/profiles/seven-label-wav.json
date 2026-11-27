@@ -1,0 +1,19 @@
+{
+  "fields": {
+    "sample_id": "sample_id",
+    "audio": "audio",
+    "human_label": "human_label",
+    "intended_label": "intended_label",
+    "speaker_id": "speaker_id",
+    "pair_id": "pair_id",
+    "channel": "channel"
+  },
+  "required": ["sample_id","audio","human_label"],
+  "label_map": {
+    "中性":"neutral", "开心":"happy", "悲伤":"sad", "愤怒":"angry",
+    "害怕":"fearful", "厌恶":"disgusted", "惊讶":"surprised"
+  },
+  "audio_base": "manifest",
+  "omit_empty": true,
+  "audio_rules": {"max_seconds":30,"require_channel_for_multichannel":true}
+}

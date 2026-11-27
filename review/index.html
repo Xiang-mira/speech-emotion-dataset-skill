@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>语音情绪听审</title>
+  <style>
+    :root { font-family: "Segoe UI", "Microsoft YaHei", sans-serif; color: #1d3330; background: #f4f6f3; --line: #d4dfd7; --ink: #1d3330; --green: #21634e; --dim: #53695e; --pale: #edf5ef; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    button, select, textarea, input { font: inherit; }
+    button, select, .download { min-height: 40px; border-radius: 8px; border: 1px solid var(--line); background: white; color: var(--ink); padding: 7px 13px; cursor: pointer; }
+    button:hover:not(:disabled), .download:hover { border-color: var(--green); }
+    button:disabled, select:disabled { opacity: .55; cursor: default; }
+    :focus-visible { outline: 3px solid #d49443; outline-offset: 2px; }
+    button.primary { background: var(--green); border-color: var(--green); color: white; font-weight: 650; }
+    [hidden] { display: none !important; }
+    h1, h2, h3, p { margin: 0; }
+    h1 { font-size: clamp(24px, 4vw, 36px); line-height: 1.35; letter-spacing: .02em; }
+    h2 { font-size: 19px; }
+    h3, legend { font-size: 16px; font-weight: 650; }
+    header { color: #f5f9f5; background: #183e34; padding: 27px max(calc((100vw - 1150px)/2), 4vw); }
+    .top, .row, .actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+    .top, .spread { justify-content: space-between; }
+    .role { color: #214b38; background: #dceee1; border-radius: 999px; padding: 5px 12px; font-size: 14px; font-weight: 600; }
+    main { margin: auto; max-width: 1190px; padding: 18px 20px 40px; }
+    .stagebar, .panel { background: #fff; border: 1px solid var(--line); border-radius: 12px; }
+    .stagebar { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding: 14px 18px; margin-bottom: 16px; }
+    .stagebar strong { font-size: 16px; }
+    .stagebar span, .hint, .small { color: var(--dim); font-size: 14px; line-height: 1.65; }
+    .stagebar button { margin-left: auto; }
+    .layout { display: grid; grid-template-columns: minmax(190px, .85fr) minmax(0, 2.5fr); align-items: start; gap: 16px; }
+    .queue-head, .work { padding: 20px; }
+    .queue-head { display: grid; gap: 12px; border-bottom: 1px solid var(--line); }
+    #list { margin: 0; list-style: none; padding: 6px; max-height: min(61vh, 780px); overflow-y: auto; }
+    #list button { display: flex; align-items: center; gap: 6px; justify-content: space-between; text-align: left; width: 100%; border-color: transparent; margin: 1px 0; }
+    #list button[aria-current="true"] { background: var(--pale); border-color: #9ebdab; font-weight: 650; }
+    #list small { color: var(--dim); font-weight: 400; flex-shrink: 0; }
+    .sample { font-family: ui-monospace, Consolas, monospace; overflow-wrap: anywhere; }
+    .work { display: grid; gap: 18px; }
+    .work > section, .form-stack { display: grid; gap: 13px; }
+    .work > section + section { border-top: 1px solid var(--line); padding-top: 18px; }
+    audio { width: 100%; min-height: 48px; }
+    .quote, .summary { border-left: 3px solid #a4c7af; background: #f4f7f3; padding: 10px 14px; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .state { display: inline-block; background: var(--pale); padding: 4px 10px; border-radius: 999px; font-size: 13px; }
+    fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+    legend { padding: 0; margin-bottom: 8px; }
+    .choices { display: flex; flex-wrap: wrap; gap: 7px; }
+    .choice { display: inline-flex; align-items: center; gap: 6px; padding: 7px 11px; border: 1px solid var(--line); border-radius: 8px; min-height: 38px; cursor: pointer; }
+    .choice:has(input:checked) { background: var(--pale); border-color: var(--green); color: #124b34; }
+    .choice input { accent-color: var(--green); margin: 0; }
+    textarea { border: 1px solid var(--line); border-radius: 8px; width: 100%; resize: vertical; padding: 10px; line-height: 1.5; }
+    .label { display: grid; gap: 6px; font-weight: 600; }
+    .label textarea, .label select { font-weight: 400; }
+    .votes { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+    .checkpoints { color: var(--dim); font-size: 14px; line-height: 1.8; }
+    .vote { padding: 12px; background: #f4f7f3; border-radius: 7px; overflow-wrap: anywhere; }
+    .vote p { margin-top: 5px; line-height: 1.6; }
+    a.download { display: inline-flex; align-items: center; text-decoration: none; }
+    #message { margin: 0 0 12px; line-height: 1.6; color: #174a38; }
+    #message.bad, .error { color: #8d332f; }
+    details { padding: 10px 0 0; }
+    summary { cursor: pointer; color: var(--green); }
+    details form { margin-top: 13px; }
+    @media (max-width: 680px) {
+      main { padding: 12px; }
+      .layout { grid-template-columns: 1fr; gap: 12px; }
+      #list { max-height: 140px; }
+      .work, .queue-head { padding: 14px; }
+      .stagebar { gap: 7px 12px; }
+      .votes { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header><div class="top"><h1>语音情绪听审</h1><span id="role" class="role" hidden></span></div></header>
+  <main>
+    <p id="message" role="status" aria-live="polite">正在读取听审任务…</p>
+    <div id="app" hidden>
+      <div class="stagebar"><strong id="phase"></strong><span id="progress"></span><span id="checkpoint"></span><button id="refresh" type="button">刷新进度</button></div>
+      <div class="layout">
+        <aside class="panel" aria-label="样本列表"><div class="queue-head"><h2>样本列表</h2><select id="filter" aria-label="筛选样本"></select></div><ul id="list"></ul></aside>
+        <article class="panel work">
+          <section id="player" hidden>
+            <div class="row spread"><h2 id="sample" class="sample"></h2><span id="badge" class="state"></span></div>
+            <audio id="audio" controls preload="metadata" aria-label="当前样本音频"></audio>
+            <p id="audioError" class="error" hidden></p><p id="text" class="quote" hidden></p>
+            <div class="row spread"><button id="prev" type="button">上一条</button><button id="next" type="button">下一条</button></div>
+          </section>
+          <section id="content" aria-label="听审与复核"></section>
+          <section id="bottom" hidden></section>
+        </article>
+      </div>
+    </div>
+  </main>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const roleNames = {r1:"听审人 1", r2:"听审人 2", adjudicator:"复核人"};
+const qualityNames = {pass:"音质合格", reject:"音质退回", uncertain:"无法判断"};
+let state = null, selected = "", activeAudio = "", visible = [], busy = false;
+function el(tag, text, cls) {
+  const node = document.createElement(tag);
+  if (text !== undefined) node.textContent = text;
+  if (cls) node.className = cls;
+  return node;
+}
+function msg(text="", bad=false) {
+  $("message").textContent = text;
+  $("message").className = bad ? "bad" : "";
+  $("message").hidden = !text;
+}
+async function request(path, payload) {
+  const response = await fetch(path, payload === undefined ? {cache:"no-store"} : {
+    method:"POST", headers:{"Content-Type":"application/json","X-Review-Role":state.role}, body:JSON.stringify(payload)
+  });
+  let data;
+  try { data = await response.json(); } catch { throw new Error("服务返回异常，请检查本地服务是否运行。"); }
+  if (!response.ok || data.error) throw new Error(data.error || "请求失败，请刷新后重试。");
+  return data;
+}
+async function load() {
+  const data = await request("/api/state");
+  if (state && data.role!==state.role) {
+    $("audio").pause(); $("app").hidden=true; $("role").hidden=true;
+    throw new Error("当前浏览器的登录角色已更换。请用独立浏览器配置或不同浏览器重新打开自己的专属链接。");
+  }
+  state = data;
+  $("app").hidden = false;
+  render();
+}
+async function submit(path, payload, notice, advance=false) {
+  if (busy) return;
+  busy = true;
+  try {
+    const result = await request(path,payload);
+    await load();
+    if (advance) {
+      const next = state.samples.find(s => !s.own_vote && !s.audio_error);
+      if (next && visible.some(s => s.sample_id === next.sample_id)) {selected=next.sample_id; render();}
+    }
+    msg(typeof notice === "function" ? notice(result) : notice);
+  } catch (err) { msg(err.message,true); }
+  finally { busy=false; }
+}
+function button(label, action, primary=false) {
+  const b = el("button",label,primary?"primary":"");
+  b.type="button"; b.onclick=action; return b;
+}
+function summary(text) { return el("p",text,"summary"); }
+function status(s) {
+  if (state.phase!=="review") return s.audio_error ? "音频异常" : s.own_vote ? "已初审" : "待初审";
+  return {pending:"待复核",proposed:"待确认",final:"已定稿"}[s.final?.status] || "待复核";
+}
+function group(title, name, items, selectedValue) {
+  const fs=el("fieldset"), wrap=el("div",undefined,"choices");
+  fs.append(el("legend",title),wrap);
+  for (const [value,caption] of items) {
+    const label=el("label",undefined,"choice"), inp=el("input");
+    inp.type="radio"; inp.name=name; inp.value=value; inp.checked=value===selectedValue;
+    label.append(inp,document.createTextNode(caption)); wrap.append(label);
+  }
+  return fs;
+}
+function formFor(s, review) {
+  const form=el("form",undefined,"form-stack");
+  const note=el("textarea"); note.name="note"; note.rows=2;
+  const q=review && s.final?.quality==="reject" ? "reject":"pass";
+  const quality=group("样本判断","quality",
+    (review?["pass","reject"]:["pass","uncertain","reject"]).map(x=>[x,qualityNames[x]]),q);
+  const labels=group(review?"最终情绪":"听到的情绪","emotion",state.labels.map(x=>[x,x]),review?s.final?.label:null);
+  const noteLab=el("label",review?"复核依据":"听审备注","label"); noteLab.append(note);
+  const b=el("button",review?(state.review_mode==="third"?"提交裁定":"提出复核结论"):"提交本条初审","primary");
+  b.type="submit"; const acts=el("div",undefined,"actions"); acts.append(b);
+  const help=el("p","","hint");
+  const sync=()=>{
+    const v=new FormData(form).get("quality");
+    labels.disabled=v!=="pass";
+    note.required=review||v!=="pass";
+    help.textContent=review ? "请记录复听依据。原始初审意见会保留。"
+      : v==="pass" ? "选择听到的主情绪。提交后保留本条原始判断。" : "请说明无法判断的原因或具体音质问题。";
+  };
+  form.append(quality,labels,noteLab,help,acts); form.onchange=sync; sync();
+  form.onsubmit=e=>{
+    e.preventDefault(); const d=new FormData(form), qual=d.get("quality"), label=qual==="pass"?d.get("emotion"):"";
+    if(qual==="pass"&&!label) { msg("请先选择一个情绪标签。",true); return; }
+    const why=note.value.trim();
+    if(note.required&&!why) { msg("请填写具体依据。",true); return; }
+    if(review) submit("/api/propose",{sample_id:s.sample_id,label,quality:qual,reason:why,version:s.final?.version||0},"复核结论已保存。");
+    else submit("/api/vote",{sample_id:s.sample_id,label,quality:qual,note:why},"已保存本条初审。",true);
+  };
+  return form;
+}
+function voteText(v) {
+  return v ? [v.label,qualityNames[v.quality]||v.quality,v.note].filter(Boolean).join(" · ") : "待提交";
+}
+function renderContent(s) {
+  const c=$("content"); c.replaceChildren();
+  if(state.role==="adjudicator" && state.phase!=="review") {
+    c.append(el("h2","等待独立初审"),summary("两位听审人提交整轮结果后，可在此查看原判并进入复核。")); return;
+  }
+  if(!s) { c.append(summary("当前筛选下没有样本。")); return; }
+  if(state.phase!=="review") {
+    c.append(el("h2","独立初审"));
+    if(s.own_vote) c.append(summary("我的原判　"+voteText(s.own_vote)));
+    else c.append(formFor(s,false));
+    return;
+  }
+  c.append(el("h2","原始听审"),el("p",s.initial_disagreement?"初审有分歧":"初审一致","hint"));
+  const votes=el("div",undefined,"votes");
+  for(const role of ["r1","r2"]) {
+    const v=el("div",undefined,"vote");
+    v.append(el("h3",roleNames[role]),el("p",voteText(s.votes?.[role]))); votes.append(v);
+  }
+  c.append(votes,el("h2","复核结论"));
+  const f=s.final||{}, canPropose=state.review_mode==="joint"?state.role!=="adjudicator":state.role==="adjudicator";
+  const confirmed=(f.confirmations||[]).map(r=>roleNames[r]||r).join("、");
+  if(f.status==="final"||f.status==="proposed") {
+    c.append(summary([status(s)+" · 版本 "+f.version,[f.label,qualityNames[f.quality]].filter(Boolean).join(" · "),
+      f.reason?"依据　"+f.reason:"",confirmed?"已确认　"+confirmed:""].filter(Boolean).join("\n")));
+  }
+  if(f.status==="proposed" && state.review_mode==="joint" && canPropose && !(f.confirmations||[]).includes(state.role)) {
+    c.append(button("确认此版本",()=>submit("/api/confirm",{sample_id:s.sample_id,version:f.version},"已确认此版本。"),true));
+  }
+  if(canPropose) {
+    if(f.status==="final"||f.status==="proposed") {
+      const d=el("details"); d.append(el("summary","修订复核结论"),formFor(s,true)); c.append(d);
+    } else c.append(formFor(s,true));
+  } else if(f.status!=="final") c.append(summary(state.review_mode==="joint"?"等待两位听审人共同复核。":"等待指定复核人裁定。"));
+}
+function renderBottom() {
+  const b=$("bottom"); b.replaceChildren(); b.hidden=false;
+  if(state.phase==="review") {
+    const links=el("div",undefined,"actions");
+    for(const [txt,path] of [["下载定稿清单","/final.csv"],["下载审核记录","/audit.csv"]]) {
+      const a=el("a",txt,"download"); a.href=path; a.download=path.slice(1); links.append(a);
+    }
+    b.append(el("h2","导出"),links);
+    const groups=Object.entries(state.group_summary||{});
+    if(groups.length) {
+      const details=el("details"),list=el("ul",undefined,"checkpoints");
+      details.append(el("summary","采集分组统计"),list);
+      for(const [g,n] of groups) list.append(el("li",(g||"未分组")+" · "+n.total+" 条，其中合格定稿 "+n.finalized+" 条。双方均判音质合格的 "+n.both_valid+" 条中，情绪一致 "+n.agree_valid+" 条。"));
+      b.append(details);
+    }
+  } else if(state.role==="adjudicator") b.hidden=true;
+  else if(state.finished[state.role]) b.append(summary("整轮初审已提交。另一位完成后进入复核。"));
+  else {
+    const total=state.samples.length, done=state.samples.filter(x=>x.own_vote).length;
+    const finish=button("提交整轮初审",()=>submit("/api/finish",{},"已提交整轮初审。"),true);
+    finish.disabled=done!==total||!total;
+    b.append(el("h2","整轮提交"),el("p",done===total?"本轮所有样本均已填写，可提交整轮初审。":"本轮还有 "+(total-done)+" 条待填写。","hint"),finish);
+  }
+  const step=Number(state.checkpoint);
+  if(!b.hidden && Number.isInteger(step) && step>0 && state.samples.length) {
+    const section=el("details"), list=el("ol",undefined,"checkpoints");
+    section.append(el("summary","阶段小结"),list);
+    for(let offset=0;offset<state.samples.length;offset+=step) {
+      const rows=state.samples.slice(offset,offset+step);
+      const progress=state.phase==="review"
+        ? "已定稿 "+rows.filter(s=>s.final?.status==="final").length+" 条，初审分歧 "+rows.filter(s=>s.initial_disagreement).length+" 条"
+        : "我的初审 "+rows.filter(s=>s.own_vote).length+" 条，音质退回 "+rows.filter(s=>s.own_vote?.quality==="reject").length+" 条";
+      list.append(el("li","第 "+(offset+1)+"–"+(offset+rows.length)+" 条 · "+progress));
+    }
+    b.append(section);
+  }
+}
+function filters() {
+  if(state.phase==="review") return [["all","全部样本"],["open","待复核或确认"],["dispute","初审有分歧"],["final","已定稿"]];
+  return [["all","全部样本"],["todo","待初审"],["done","已初审"],["bad","音频异常"]];
+}
+function render() {
+  const review=state.phase==="review", adj=state.role==="adjudicator";
+  $("role").hidden=false; $("role").textContent=roleNames[state.role]||state.role;
+  $("phase").textContent=review?(state.review_mode==="joint"?"共同复核":"指定复核"):"独立初审";
+  const done=state.counts.voted||0, total=state.counts.total;
+  $("progress").textContent=review ? "合格定稿 "+state.counts.finalized+" / "+total+" · 初审分歧 "+state.counts.disagreements
+    : adj?"等待听审人完成初审":"我的初审 "+done+" / "+total;
+  const step=Number(state.checkpoint);
+  $("checkpoint").textContent=!adj&&!review&&step>0&&total>0
+    ? "阶段进度 "+(done>=total?Math.ceil(total/step):Math.floor(done/step))+" / "+Math.ceil(total/step) : "";
+  const f=$("filter"), before=f.value;
+  f.replaceChildren(...filters().map(([v,t])=>new Option(t,v))); f.value=filters().some(([v])=>v===before)?before:"all";
+  visible=(adj&&!review?[]:state.samples).filter(s=>{
+    switch(f.value) {
+      case "open":return s.final?.status!=="final"; case "dispute": return s.initial_disagreement;
+      case "final":return s.final?.status==="final"; case "todo":return !s.own_vote;
+      case "done":return !!s.own_vote; case "bad":return !!s.audio_error; default:return true;
+    }
+  });
+  let i=visible.findIndex(s=>s.sample_id===selected);
+  if(i<0) i=visible.length?0:-1;
+  const s=visible[i]; selected=s?.sample_id||"";
+  const list=$("list"); list.replaceChildren();
+  for(const item of visible) {
+    const li=el("li"), btn=button("",()=>{selected=item.sample_id;msg();render();});
+    btn.setAttribute("aria-current",String(item.sample_id===selected));
+    btn.append(el("span",item.sample_id,"sample"),el("small",status(item)));li.append(btn);list.append(li);
+  }
+  $("player").hidden=!s;
+  const url=s&&!s.audio_error?s.audio_url:"";
+  const audio=$("audio");
+  if(activeAudio!==url) {
+    audio.pause(); if(url) audio.src=url; else audio.removeAttribute("src"); audio.load(); activeAudio=url;
+  }
+  if(s) {
+    $("sample").textContent=s.sample_id;$("badge").textContent=status(s); audio.hidden=!url;
+    $("audioError").hidden=!s.audio_error; $("audioError").textContent=s.audio_error||"";
+    $("text").hidden=!s.text; $("text").textContent=s.text||"";
+    $("prev").disabled=i<=0; $("next").disabled=i>=visible.length-1;
+  }
+  renderContent(s);renderBottom();
+}
+function move(delta) {
+  const i=visible.findIndex(s=>s.sample_id===selected), s=visible[i+delta];
+  if(s) { selected=s.sample_id; msg(); render(); }
+}
+function refresh() { load().then(()=>msg()).catch(e=>msg(e.message,true)); }
+$("prev").onclick=()=>move(-1);$("next").onclick=()=>move(1);$("filter").onchange=()=>{msg();render();};
+$("refresh").onclick=refresh;
+$("audio").addEventListener("error",()=>{ if($("audio").getAttribute("src")) { $("audioError").textContent="此文件无法在浏览器中播放，请检查录音格式与文件。";$("audioError").hidden=false; } });
+refresh();
+setInterval(()=>{if(!busy&&state?.phase==="independent"&&(state.role==="adjudicator"||state.finished[state.role])&&document.visibilityState==="visible"&&$("audio").paused) load().catch(e=>msg(e.message,true));},12000);
+</script>
+</body>
+</html>
