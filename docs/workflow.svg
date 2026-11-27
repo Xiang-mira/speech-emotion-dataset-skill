@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="872" height="460" viewBox="0 0 872 460" role="img" aria-labelledby="title desc" lang="zh-CN">
+  <title id="title">语音情绪评测集工作流程</title>
+  <desc id="desc">按已有材料选择起点。一句业务需求可以生成经过核验的待录清单。录制人按清单录音后，或已有 WAV 和编号清单时，两位听审人独立判断情绪和音质，有分歧则复核。已有人工作出的定稿、对应录音和接收端要求时，可以直接导出评分清单。</desc>
+  <style>
+    text { font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", Arial, sans-serif; fill: #193c30; }
+    .heading { font-size: 16px; font-weight: 600; fill: #35594a; }
+    .stage { font-size: 15px; font-weight: 600; fill: #267453; }
+    .material, .result { font-size: 20px; font-weight: 600; }
+    .action { font-size: 17px; }
+    .file { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; font-size: 14px; fill: #35594a; }
+    .handoff { font-size: 14px; fill: #456555; }
+    .card { fill: #f7faf8; stroke: #cbdcd2; }
+    .output { fill: #e1f1e6; }
+    .arrow { fill: none; stroke: #648875; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  </style>
+  <defs>
+    <g id="right" class="arrow"><path d="M0 0h21m-6-5 6 5-6 5"/></g>
+    <g id="down" class="arrow"><path d="M0 0v19m-5-6 5 6 5-6"/></g>
+  </defs>
+  <rect width="872" height="460" rx="12" fill="#fff"/>
+  <g class="heading">
+    <text x="39" y="31">输入材料</text>
+    <text x="287" y="31">处理步骤</text>
+    <text x="604" y="31">本步交付</text>
+  </g>
+
+  <g aria-label="采录设计">
+    <rect class="card" x="16" y="48" width="840" height="102" rx="12"/>
+    <text class="stage" x="39" y="86">采录设计</text>
+    <text class="material" x="39" y="119">一句业务需求</text>
+    <use href="#right" x="240" y="100"/>
+    <text class="action" x="287" y="80">确定场景、标签和配额</text>
+    <text class="action" x="287" y="107">编写录制文本和表演提示</text>
+    <text class="action" x="287" y="134">核验数量与同人同句配对</text>
+    <use href="#right" x="544" y="100"/>
+    <rect class="output" x="582" y="59" width="263" height="80" rx="8"/>
+    <text class="result" x="604" y="94">待录清单与配额配置</text>
+    <text class="file" x="604" y="119">collection.csv · config.json</text>
+  </g>
+  <g aria-label="录制人按清单录音">
+    <use href="#down" x="47" y="154"/>
+    <text class="handoff" x="64" y="170">录制人按清单录音</text>
+  </g>
+
+  <g aria-label="听审定稿">
+    <rect class="card" x="16" y="179" width="840" height="123" rx="12"/>
+    <text class="stage" x="39" y="227">听审定稿</text>
+    <text class="material" x="39" y="260">WAV 与编号清单</text>
+    <use href="#right" x="240" y="241"/>
+    <text class="action" x="287" y="222">两人独立听审，检查音质</text>
+    <text class="action" x="287" y="249">音质合格且判断一致可定稿</text>
+    <text class="action" x="287" y="276">有分歧则复核</text>
+    <use href="#right" x="544" y="241"/>
+    <rect class="output" x="582" y="200" width="263" height="81" rx="8"/>
+    <text class="result" x="604" y="235">人工金标与听审记录</text>
+    <text class="file" x="604" y="260">final.csv · audit.csv</text>
+  </g>
+  <g aria-label="人工定稿后">
+    <use href="#down" x="47" y="306"/>
+    <text class="handoff" x="64" y="322">人工定稿后</text>
+  </g>
+
+  <g aria-label="评分交付">
+    <rect class="card" x="16" y="331" width="840" height="113" rx="12"/>
+    <text class="stage" x="39" y="358">评分交付</text>
+    <text class="material" x="39" y="390">人工定稿、WAV</text>
+    <text class="material" x="39" y="418">及接收端要求</text>
+    <use href="#right" x="240" y="388"/>
+    <text class="action" x="287" y="380">按编号匹配录音与金标</text>
+    <text class="action" x="287" y="407">映射字段，导出后回读核验</text>
+    <use href="#right" x="544" y="388"/>
+    <rect class="output" x="582" y="347" width="263" height="81" rx="8"/>
+    <text class="result" x="604" y="382">评分清单与配套录音</text>
+    <text class="file" x="604" y="407">manifest.jsonl · WAV</text>
+  </g>
+</svg>
