@@ -1,6 +1,6 @@
 # 语音情绪评测集构建与听审
 
-把想检验的问题告诉 `speech-emotion-eval`，即可生成逐条可录的清单。已有录音或人工定稿时，也可以从相应阶段开始。
+把想检验的问题告诉 `speech-emotion-dataset`，即可生成逐条可录的清单。已有录音或人工定稿时，也可以从相应阶段开始。
 
 [首次安装](#首次安装与使用) · [试用听审网页](review/README.md) · [导出评分清单](#使用自己的录音和定稿)
 
@@ -55,28 +55,28 @@
 
 ### 2. 在 Codex 对话中安装
 
-把下面这行复制到刚打开的**项目对话框**并发送。仓库名为 `speech-emotion-dataset-skill`，安装后在 Codex 中用 `$speech-emotion-eval` 调用。
+把下面这行复制到刚打开的**项目对话框**并发送。仓库名为 `speech-emotion-dataset-skill`，安装后在 Codex 中用 `$speech-emotion-dataset` 调用。
 
 ```text
-$skill-installer 请从 https://github.com/Xiang-mira/speech-emotion-dataset-skill/tree/main/skills/speech-emotion-eval 安装到当前项目。使用安装器的 --dest .agents/skills 参数，安装后读取 .agents/skills/speech-emotion-eval/SKILL.md，确认名称是 speech-emotion-eval。
+$skill-installer 请从 https://github.com/Xiang-mira/speech-emotion-dataset-skill/tree/main/skills/speech-emotion-dataset 安装到当前项目。使用安装器的 --dest .agents/skills 参数，安装后读取 .agents/skills/speech-emotion-dataset/SKILL.md，确认名称是 speech-emotion-dataset。
 ```
 
-安装成功的标志是**自己的项目文件夹**中出现 `.agents/skills/speech-emotion-eval/SKILL.md`。在同一项目开一个新对话，发送下一步的需求即可。
+安装后应能在**自己的项目文件夹**中找到 `.agents/skills/speech-emotion-dataset/SKILL.md`。已安装旧版的项目也可使用上面的命令安装新版，然后在同一项目开一个新对话，用 `$speech-emotion-dataset` 发送需求。
 
-**手动安装。** 如果对话内安装失败，或项目里找不到上述文件，可以在本仓库首页选择 **Code → Download ZIP** 并解压。在自己的项目文件夹中新建 `.agents` 文件夹，再在里面新建 `skills` 文件夹。把解压目录中的 `skills/speech-emotion-eval` 整个复制进去，确认入口路径与上面一致。若新对话仍找不到技能，重启 Codex 后重新打开这个项目。[Codex 技能使用说明](https://developers.openai.com/codex/skills/)
+**手动安装。** 如果对话内安装失败，或项目里找不到上述文件，可以在本仓库首页选择 **Code → Download ZIP** 并解压。在自己的项目文件夹中新建 `.agents` 文件夹，再在里面新建 `skills` 文件夹。把解压目录中的 `skills/speech-emotion-dataset` 整个复制进去，确认入口路径与上面一致。若新对话仍找不到技能，重启 Codex 后重新打开这个项目。[Codex 技能使用说明](https://developers.openai.com/codex/skills/)
 
 ### 3. 一句话生成第一份清单
 
-将下面整行复制到新对话。开头的 `$speech-emotion-eval` 指定已安装的技能，后半句写自己的场景、情绪与数量。
+将下面整行复制到新对话。开头的 `$speech-emotion-dataset` 指定已安装的技能，后半句写自己的场景、情绪与数量。
 
-> $speech-emotion-eval 请在本项目的 my-first-eval 目录生成家庭语音助手采录清单，灯光状态和物品位置各一条中性，再各做一组同人同句的开心、惊讶对照，写好录制文本和表演提示，并核验配额与配对。
+> $speech-emotion-dataset 请在本项目的 my-first-eval 目录生成家庭语音助手采录清单，灯光状态和物品位置各一条中性，再各做一组同人同句的开心、惊讶对照，写好录制文本和表演提示，并核验配额与配对。
 
 完成后，在项目中打开 `my-first-eval/collection.csv`，每行就是一条录制任务。录制人只读 `text`，按 `intended_label` 的语气和 `cue` 的提示表演，再按 `audio` 给出的路径保存 WAV。相同 `pair_id` 的两行由同一人录制。Excel 中若出现中文乱码，可用「数据 → 自文本/CSV」按 UTF-8 导入。同目录的 `config.json` 记录这次需求的标签与配额。
 
 需要自行复验时，在 `voice-eval-work` 项目根目录运行下面的命令。macOS 或 Linux 将开头的 `py -3` 换为 `python3`。
 
 ```sh
-py -3 .agents/skills/speech-emotion-eval/scripts/pipeline.py check --project my-first-eval
+py -3 .agents/skills/speech-emotion-dataset/scripts/pipeline.py check --project my-first-eval
 ```
 
 对上面的示例，核验应返回 `ok: true`、`records: 6`、`unique_texts: 4`、`pairs: 2`。换需求后，分别对照新配额检查任务数、不同文本数和配对组数。例如每个场景再加一条独立的中性表达，三项就变成 8、6、2。录制前即可完成这一步。拿到 WAV 后，如需组织双人听审，再按下一节启动网页。
@@ -106,20 +106,20 @@ python run.py demo
 以下命令以双人演示为例。将网页下载的定稿清单保存为 `work/demo/final.csv` 后运行：
 
 ```sh
-python skills/speech-emotion-eval/scripts/pipeline.py check --project work/demo
-python skills/speech-emotion-eval/scripts/pipeline.py audio --project work/demo
-python skills/speech-emotion-eval/scripts/pipeline.py export --project work/demo --final work/demo/final.csv --profile examples/demo/profile.json --out work/demo/manifest.jsonl
+python skills/speech-emotion-dataset/scripts/pipeline.py check --project work/demo
+python skills/speech-emotion-dataset/scripts/pipeline.py audio --project work/demo
+python skills/speech-emotion-dataset/scripts/pipeline.py export --project work/demo --final work/demo/final.csv --profile examples/demo/profile.json --out work/demo/manifest.jsonl
 ```
 
 接收端字段、标签和音频要求可按实际协议设置。[七类 WAV 映射示例](examples/profiles/seven-label-wav.json)要求单条不超过 30 秒，并对多声道文件指定语音通道。通用采录阶段的时长以本轮需求为准。
 
 ## 方法与验证
 
-技能入口遵循 Agent Skills 规范。`SKILL.md` 中的 `name` 与技能目录同名，`description` 说明适用任务。场景设计、听审与交付的详细规则分别放在 `references/`，清单核验脚本放在 `scripts/`。[查看技能入口](skills/speech-emotion-eval/SKILL.md) · [Agent Skills 规范](https://agentskills.io/specification)
+技能入口遵循 Agent Skills 规范。`SKILL.md` 中的 `name` 与技能目录同名，`description` 说明适用任务。场景设计、听审与交付的详细规则分别放在 `references/`，清单核验脚本放在 `scripts/`。[查看技能入口](skills/speech-emotion-dataset/SKILL.md) · [Agent Skills 规范](https://agentskills.io/specification)
 
-- [场景、配额与文本提示词](skills/speech-emotion-eval/references/design.md)
-- [听审和分歧处理](skills/speech-emotion-eval/references/review.md) · [听审网页操作](review/README.md)
-- [字段与评分清单](skills/speech-emotion-eval/references/delivery.md)
+- [场景、配额与文本提示词](skills/speech-emotion-dataset/references/design.md)
+- [听审和分歧处理](skills/speech-emotion-dataset/references/review.md) · [听审网页操作](review/README.md)
+- [字段与评分清单](skills/speech-emotion-dataset/references/delivery.md)
 - [行为测试用例](evals/cases.md) · [验收结果与模拟导出](evals/results.md)
 
 本地运行 `python -m unittest discover -s tests -v` 可复验程序行为。模型表现需要在实际录音和经确认的人工金标上另外评测。

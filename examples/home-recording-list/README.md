@@ -14,5 +14,5 @@
 在仓库根目录运行以下命令可复核采录设计。录音到齐后将本目录和 WAV 一并复制到工作目录，供[听审网页](../../review/README.md)使用。若要立即试用播放和复核流程，可另行启动[听审演示](../demo/coverage.md)。
 
 ```sh
-python skills/speech-emotion-eval/scripts/pipeline.py check --project examples/home-recording-list
+python skills/speech-emotion-dataset/scripts/pipeline.py check --project examples/home-recording-list
 ```

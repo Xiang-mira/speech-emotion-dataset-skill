@@ -29,7 +29,7 @@
 在仓库根目录运行以下命令可复验清单。Windows 可将 `python` 换成 `py -3`。
 
 ```sh
-python skills/speech-emotion-eval/scripts/pipeline.py check --project evals/fixtures/parcel-and-family-travel
+python skills/speech-emotion-dataset/scripts/pipeline.py check --project evals/fixtures/parcel-and-family-travel
 ```
 
 核验得到 8 个唯一编号、8 个不同的 WAV 路径、6 段不同原文和 2 组同人同句对照。另在临时副本中交换 H004 的“惊讶”和 H008 的“悲伤”，全批各情绪的数量保持相同，检查器仍检出包裹对照缺“惊讶”、出行对照缺“悲伤”两项错误。
@@ -41,7 +41,7 @@ python skills/speech-emotion-eval/scripts/pipeline.py check --project evals/fixt
 在项目根目录运行 `python run.py demo`，等工作目录中的六段 WAV 准备好，再按 Ctrl+C 停止服务。然后用附带的模拟定稿验证导出。正式交付请选择实际听审形成的定稿。
 
 ```text
-python skills/speech-emotion-eval/scripts/pipeline.py export --project work/demo --final evals/fixtures/demo-final.simulated.csv --profile examples/profiles/seven-label-wav.json --out work/preview/demo-simulated.jsonl
+python skills/speech-emotion-dataset/scripts/pipeline.py export --project work/demo --final evals/fixtures/demo-final.simulated.csv --profile examples/profiles/seven-label-wav.json --out work/preview/demo-simulated.jsonl
 ```
 
 预期得到六行，音频路径基于输出文件目录。两条模拟人工标签与对应朗读预设相反，演示二者分别保存。导出报告的 `verified_jsonl` 表示本工具已回读并核验 JSONL。将实际交付物移到其他机器时保持相对路径结构，或在最终交付目录重新导出。

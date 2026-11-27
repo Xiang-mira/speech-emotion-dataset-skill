@@ -11,7 +11,7 @@ import wave
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT = ROOT / "skills" / "speech-emotion-eval" / "scripts" / "pipeline.py"
+SCRIPT = ROOT / "skills" / "speech-emotion-dataset" / "scripts" / "pipeline.py"
 spec = importlib.util.spec_from_file_location("speech_collection_pipeline", SCRIPT)
 pipeline = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(pipeline)

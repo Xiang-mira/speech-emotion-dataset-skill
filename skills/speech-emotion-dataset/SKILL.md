@@ -1,5 +1,5 @@
 ---
-name: speech-emotion-eval
+name: speech-emotion-dataset
 description: 当用户要设计语音情绪识别评测集、分配采录配额、编写逐条录制文本和语气对照、组织已有录音的双人听审，或将定稿标签导出为评分清单时使用。可以从一句业务需求、已有音频或已定稿清单开始。
 ---
 
