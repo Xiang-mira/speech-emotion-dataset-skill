@@ -20,4 +20,4 @@ description: 当用户要设计语音情绪识别评测集、分配采录配额�
 
 清单核验、音频检查和定稿导出脚本需要 Python 3.10 或更高版本，仅依赖标准库。单独安装本技能即可执行这些操作。清单格式和接收端配置见[字段与交付](references/delivery.md)。
 
-双人听审网页在本机运行。下载完整仓库后，在仓库根目录运行 `python run.py demo`，打开终端显示的听审人专属链接。使用自己的录音时，运行 `python run.py review --project 项目目录`。Windows 可将 `python` 换为 `py -3`。[完整仓库与网页启动说明](https://github.com/Xiang-mira/speech-emotion-eval-skill#试用听审网页) · [使用自己的录音](https://github.com/Xiang-mira/speech-emotion-eval-skill/blob/main/review/README.md#切换自己的材料)
+双人听审网页在本机运行。下载完整仓库后，在仓库根目录运行 `python run.py demo`，打开终端显示的听审人专属链接。使用自己的录音时，运行 `python run.py review --project 项目目录`。Windows 可将 `python` 换为 `py -3`。[完整仓库](https://github.com/Xiang-mira/speech-emotion-eval-skill) · [听审网页启动与录音导入说明](https://github.com/Xiang-mira/speech-emotion-eval-skill/blob/main/review/README.md)
