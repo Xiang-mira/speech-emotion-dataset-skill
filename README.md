@@ -1,12 +1,40 @@
-# 语音情绪评测集
+# 语音情绪评测集构建与听审
 
-从一句业务需求开始，设计场景和配额，生成能直接录制的文本。已有录音可在本机开展双人独立听审，定稿后按接收端要求导出评分清单。
+把想检验的问题告诉 `speech-emotion-eval`，它会将场景、标签和配额展开成逐条采录清单。每条都有录制文本、语气要求和单独的表演提示。拿到录音后，可以继续组织双人独立听审，再将人工定稿导出为评分清单。
 
-**家庭语音助手采录清单**　[下载 Excel](examples/home-recording-list/家庭语音助手采录清单.xlsx?raw=true) · [查看 CSV](examples/home-recording-list/collection.csv) · [查看配置](examples/home-recording-list/config.json)。灯光状态、物品位置各含一条中性表达及一组开心／惊讶对照，共六条待录，人工金标待听审。[录制说明](examples/home-recording-list/README.md)
+[首次安装](#首次安装与使用) · [试用听审网页](#试用听审网页) · [导出评分清单](#使用自己的录音和定稿)
+
+## 生成结果示例
+
+**输入一句需求**
+
+> 想测家庭语音助手能否区分平静表达和带情绪的表达。灯光状态和物品位置各做一条中性，再各做一组同人同句的开心、惊讶对照。
+
+**生成的采录清单**共 6 条。每个场景先列一条中性表达，接着列出 A、B 两种读法，便于对照同一句话怎样读出不同的情绪。
+
+### 场景一 · 灯光状态
+
+| 样本编号 | 配对编号 | 语气要求 | 录制文本 | 表演提示 |
+|---|---|---|---|---|
+| L01 | — | 中性 | 玄关的灯开着，走廊的灯关着。 | 像在回答家里哪些灯还开着。两处地点之间自然停一下，照常说完。 |
+| L02A | P01 | 开心 | 你看，门口那盏灯又亮了。 | 刚修好的灯终于能用了，招呼家人来看。“又亮了”带一点笑意，句尾放松。 |
+| L02B | P01 | 惊讶 | 你看，门口那盏灯又亮了。 | 明明记得刚关过灯。说到“又”时音调稍抬，像刚发现灯亮着。 |
+
+### 场景二 · 物品位置
+
+| 样本编号 | 配对编号 | 语气要求 | 录制文本 | 表演提示 |
+|---|---|---|---|---|
+| K01 | — | 中性 | 遥控器在茶几下面那层，靠沙发这边。 | 家里人问遥控器放在哪儿。平常音量回答，最后几个字自然带过。 |
+| K02A | P02 | 开心 | 那张照片还夹在这本书里。 | 想找这张老照片给家人看，翻书时找着了。把“还夹在”说得轻快些。 |
+| K02B | P02 | 惊讶 | 那张照片还夹在这本书里。 | 原以为照片早就收进相册了。把“这本书里”稍稍读重，像在确认眼前所见。 |
+
+录制人只读“录制文本”列。每个配对编号对应两条录音，由同一人逐字读同一句话。例如，P01 的两条分别保存为 `L02A.wav` 和 `L02B.wav`。两条中性样本各用独立原文，因此这批共有 **4 段原文、2 组对照**。表中的情绪是朗读预设，人工金标在听审后确定。
+
+[下载这 6 条的 Excel 清单](examples/home-recording-list/家庭语音助手采录清单.xlsx?raw=true) · [原始 CSV](examples/home-recording-list/collection.csv) · [配额配置](examples/home-recording-list/config.json) · [录制说明](examples/home-recording-list/README.md)
 
 ## 首次安装与使用
 
-下面以本机 Codex 为例。在项目里安装一次，以后在同一项目中直接描述想测的问题，就能生成采录清单。只有需求、还没开始录音时，也可以从这里开始。
+下面以本机 Codex 为例。在项目中安装一次，以后只需在同一项目的对话框里描述需求。编写采录清单时无需预先准备音频。
 
 ### 1. 打开工作目录
 
@@ -19,10 +47,12 @@
 把下面这行复制到刚打开的**项目对话框**并发送。
 
 ```text
-$skill-installer 请从 https://github.com/Xiang-mira/speech-emotion-eval-kit/tree/main/skills/speech-emotion-eval 安装这个 Skill 到当前项目的 .agents/skills 目录，并确认能找到 .agents/skills/speech-emotion-eval/SKILL.md。
+$skill-installer 请从 https://github.com/Xiang-mira/speech-emotion-eval-skill/tree/main/skills/speech-emotion-eval 安装这个 Skill 到当前项目的 .agents/skills 目录，并确认能找到 .agents/skills/speech-emotion-eval/SKILL.md。
 ```
 
-安装完成后，在同一项目开一个新对话，输入 `$speech-emotion-eval` 可显式选择技能。如果没有出现，先确认上述路径能打开，再重启 Codex。也可以在 GitHub 主页点击 **Code → Download ZIP**，解压后将 `skills/speech-emotion-eval` 整个文件夹复制到项目的 `.agents/skills/` 下；复制完成后的入口路径相同。[Codex 技能使用说明](https://learn.chatgpt.com/docs/build-skills)
+安装完成后，在同一项目开一个新对话，输入 `$speech-emotion-eval` 即可选择技能。如果没有出现，先确认上述路径能打开，再重启 Codex。
+
+也可以在本仓库首页选择 **Code → Download ZIP**，解压后将整个 `skills/speech-emotion-eval` 文件夹复制到项目的 `.agents/skills/` 下。两种方式的安装位置相同。[Codex 技能使用说明](https://developers.openai.com/codex/skills/)
 
 ### 3. 一句话生成第一份清单
 
@@ -30,7 +60,7 @@ $skill-installer 请从 https://github.com/Xiang-mira/speech-emotion-eval-kit/tr
 
 > 请在本项目的 my-first-eval 目录生成家庭语音助手采录清单：灯光状态和物品位置各一条中性，再各做一组同人同句的开心、惊讶对照，写好录制文本和表演提示，并核验配额与配对。
 
-完成后打开 **`my-first-eval/collection.csv`**，用 Excel 或其他表格软件即可查看每条要读的原文、语气要求、表演提示和 WAV 文件名。同目录的 `config.json` 记录标签与配额。这个例子应得到 **6 条任务、4 段不同原文、2 组同人同文对照**。当前是待录清单，人工金标在实际听审后填写。
+完成后用 Excel 或其他表格软件打开 `my-first-eval/collection.csv`，即可按行分派录制任务。同目录的 `config.json` 记录标签与配额。新生成的句子可以变化，样本数量和配对关系应符合需求。
 
 需要自行复验时，在 `voice-eval-work` 项目根目录运行下面的命令。macOS 或 Linux 将开头的 `py -3` 换为 `python3`。
 
@@ -73,6 +103,8 @@ python skills/speech-emotion-eval/scripts/pipeline.py export --project work/demo
 接收端字段、标签和音频要求可按实际协议设置。[七类 WAV 映射示例](examples/profiles/seven-label-wav.json)要求单条不超过 30 秒，并对多声道文件指定语音通道。通用采录阶段的时长以本轮需求为准。
 
 ## 方法与验证
+
+技能入口遵循 Agent Skills 规范。`SKILL.md` 中的 `name` 与技能目录同名，`description` 说明适用任务。场景设计、听审与交付的详细规则分别放在 `references/`，清单核验脚本放在 `scripts/`。[查看技能入口](skills/speech-emotion-eval/SKILL.md) · [Agent Skills 规范](https://agentskills.io/specification)
 
 - [场景、配额与文本提示词](skills/speech-emotion-eval/references/design.md)
 - [听审和分歧处理](skills/speech-emotion-eval/references/review.md) · [听审网页操作](review/README.md)

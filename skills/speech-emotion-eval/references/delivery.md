@@ -14,6 +14,16 @@
 
 `config.json` 的 `labels` 为可用标签列表。按项目需要提供 `group_quotas`、`scene_quotas`、按组设置的 `label_quotas`、`pair_groups`、`forbid_label_words` 和 `label_aliases`。听审设置包括 `review_mode`（`joint` 或 `third`）、`show_text` 和 `checkpoint`。
 
+有固定总量时可用 `total_quota` 核验行数。有指定情绪组合时可用 `pair_combinations` 核验每种组合的组数，每组列一次。下例节选自六条家庭采录任务的配置。两个场景各安排一组开心与惊讶对照，因此同一组合列两次。
+
+```json
+{
+  "total_quota": 6,
+  "pair_groups": ["同句对照"],
+  "pair_combinations": [["开心", "惊讶"], ["开心", "惊讶"]]
+}
+```
+
 需要按实际金标验收的分组，用 `gold_quotas` 单独列出各组的目标标签与数量。若每组必须覆盖设计的两类情绪，启用 `require_pair_target_labels`。两条金标互换仍可满足整组覆盖。出现配额缺口时按实际缺口补录或替换，保留原始金标。
 
 ## 已定稿的标签
@@ -35,7 +45,9 @@
 
 若接收端使用另一套标签，可加 `label_map` 指定每个中文标签的目标值。`audio_base: "manifest"` 表示音频路径相对输出清单。`omit_empty: true` 省略空的可选字段。接收端若要求最长时长或多声道必须选通道，可配置 `audio_rules`，例如 `{"max_seconds":30,"require_channel_for_multichannel":true}`，并映射 `channel`（从零开始的整数）。时长与通道设置取决于接收端。程序按完整清单检查音频、有效标签及对照关系，生成后回读 JSONL。文件、人工定稿和源清单统一按样本编号关联。缺音频、无标签或配对不完整时先修复或明确重建正式批次，再导出。
 
-从完整项目根目录执行下列命令，将 `PROJECT` 换为当前项目目录。
+只在当前项目的 `.agents/skills/` 安装了技能时，在该项目根目录执行 `python .agents/skills/speech-emotion-eval/scripts/pipeline.py check --project my-first-eval`，将 `my-first-eval` 换成实际清单目录。
+
+下载了完整仓库时，从仓库根目录执行下列命令，将 `PROJECT` 换为当前清单目录。
 
 ```text
 python skills/speech-emotion-eval/scripts/pipeline.py check --project PROJECT
