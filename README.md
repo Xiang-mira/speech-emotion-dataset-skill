@@ -4,13 +4,41 @@
 
 **家庭语音助手采录清单**　[下载 Excel](examples/home-recording-list/家庭语音助手采录清单.xlsx?raw=true) · [查看 CSV](examples/home-recording-list/collection.csv) · [查看配置](examples/home-recording-list/config.json)。灯光状态、物品位置各含一条中性表达及一组开心／惊讶对照，共六条待录，人工金标待听审。[录制说明](examples/home-recording-list/README.md)
 
-## 从需求开始
+## 首次安装与使用
 
-在支持 Agent Skills 的智能体中选择本项目的 [Skill 入口](skills/speech-emotion-eval/SKILL.md)，直接描述想测的问题。
+下面以本机 Codex 为例。在项目里安装一次，以后在同一项目中直接描述想测的问题，就能生成采录清单。只有需求、还没开始录音时，也可以从这里开始。
 
-> 想测家庭语音助手能否区分平静与带情绪的表达。灯光状态和物品位置各做一条中性，再各做一组同人同句的开心、惊讶对照。请给我完整的采录清单。
+### 1. 打开工作目录
 
-上述请求会得到六个录音任务、四段不同原文、两个对照组。朗读预设和表演提示独立成列。要在 Codex 项目中按自然语言匹配技能，可将目录 `skills/speech-emotion-eval` 链接到目标项目的 `.agents/skills/speech-emotion-eval`。[本地技能使用说明](https://learn.chatgpt.com/docs/build-skills#where-codex-loads-local-skills)
+首次使用 Codex，请先安装并登录，在电脑上新建一个文件夹，例如 `voice-eval-work`，然后在 Codex 中将它作为项目打开。[Codex 官方快速入门](https://developers.openai.com/codex/quickstart/)
+
+清单核验脚本使用 Python 3.10 或更高版本，只依赖标准库。Windows 可在终端用 `py -3 --version` 查看版本，macOS 或 Linux 可用 `python3 --version`。如果电脑还没有可用的 Python，可从官网下载。[Python 下载页](https://www.python.org/downloads/)
+
+### 2. 在 Codex 对话中安装
+
+把下面这行复制到刚打开的**项目对话框**并发送。
+
+```text
+$skill-installer 请从 https://github.com/Xiang-mira/speech-emotion-eval-kit/tree/main/skills/speech-emotion-eval 安装这个 Skill 到当前项目的 .agents/skills 目录，并确认能找到 .agents/skills/speech-emotion-eval/SKILL.md。
+```
+
+安装完成后，在同一项目开一个新对话，输入 `$speech-emotion-eval` 可显式选择技能。如果没有出现，先确认上述路径能打开，再重启 Codex。也可以在 GitHub 主页点击 **Code → Download ZIP**，解压后将 `skills/speech-emotion-eval` 整个文件夹复制到项目的 `.agents/skills/` 下；复制完成后的入口路径相同。[Codex 技能使用说明](https://learn.chatgpt.com/docs/build-skills)
+
+### 3. 一句话生成第一份清单
+
+在同一项目的对话框里直接发送以下需求。以后可替换要测的场景、情绪和数量。
+
+> 请在本项目的 my-first-eval 目录生成家庭语音助手采录清单：灯光状态和物品位置各一条中性，再各做一组同人同句的开心、惊讶对照，写好录制文本和表演提示，并核验配额与配对。
+
+完成后打开 **`my-first-eval/collection.csv`**，用 Excel 或其他表格软件即可查看每条要读的原文、语气要求、表演提示和 WAV 文件名。同目录的 `config.json` 记录标签与配额。这个例子应得到 **6 条任务、4 段不同原文、2 组同人同文对照**。当前是待录清单，人工金标在实际听审后填写。
+
+需要自行复验时，在 `voice-eval-work` 项目根目录运行下面的命令。macOS 或 Linux 将开头的 `py -3` 换为 `python3`。
+
+```sh
+py -3 .agents/skills/speech-emotion-eval/scripts/pipeline.py check --project my-first-eval
+```
+
+结果中应看到 `ok: true`、`records: 6`、`unique_texts: 4` 和 `pairs: 2`。之后需要试听或组织双人听审时，再下载完整仓库，按下一节启动网页。
 
 ## 试用听审网页
 
