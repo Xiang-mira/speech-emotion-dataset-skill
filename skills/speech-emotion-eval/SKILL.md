@@ -18,4 +18,6 @@ description: 当用户要设计语音情绪识别评测集、分配采录配额�
 3. 将文件写入用户的项目目录，用本技能目录下的 `scripts/pipeline.py` 执行相应的 `check`、`audio` 或 `export`。逐行语义复核由执行者完成。遇到确定性错误修正后再次核验。
 4. 人工金标来自实际听审或可追溯的外部定稿记录。保留初审分歧、后续修订理由及版本。只有采录材料时金标留空，可评分数量为零。报告实际完成的阶段、可交付文件和缺件。
 
-清单格式和接收端配置见[字段与交付](references/delivery.md)。配套听审工具随完整项目提供，在项目根目录运行 `python run.py demo`。仅使用本技能目录时，仍可生成采录材料、检查音频或导出外部定稿。
+清单核验、音频检查和定稿导出脚本需要 Python 3.10 或更高版本，仅依赖标准库。单独安装本技能即可执行这些操作。清单格式和接收端配置见[字段与交付](references/delivery.md)。
+
+双人听审网页在本机运行。下载完整仓库后，在仓库根目录运行 `python run.py demo`，打开终端显示的听审人专属链接。使用自己的录音时，运行 `python run.py review --project 项目目录`。Windows 可将 `python` 换为 `py -3`。[完整仓库与网页启动说明](https://github.com/Xiang-mira/speech-emotion-eval-skill#试用听审网页) · [使用自己的录音](https://github.com/Xiang-mira/speech-emotion-eval-skill/blob/main/review/README.md#切换自己的材料)

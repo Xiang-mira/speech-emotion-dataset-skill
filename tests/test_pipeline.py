@@ -4,6 +4,7 @@ import importlib.util
 import io
 import json
 from pathlib import Path
+import shutil
 import tempfile
 import unittest
 import wave
@@ -21,6 +22,52 @@ def csv_file(path, headers, rows):
         writer = csv.DictWriter(f, fieldnames=headers)
         writer.writeheader()
         writer.writerows(rows)
+
+
+def invoke_pipeline(args):
+    with contextlib.redirect_stdout(io.StringIO()) as output:
+        code = pipeline.main(args)
+    return code, json.loads(output.getvalue())
+
+
+class ParcelAndFamilyTravelTest(unittest.TestCase):
+    fixture = ROOT / "evals" / "fixtures" / "parcel-and-family-travel"
+
+    def test_recording_plan_matches_each_scene(self):
+        code, report = invoke_pipeline(["check", "--project", str(self.fixture)])
+        self.assertEqual(code, 0, report["errors"])
+        self.assertEqual((report["records"], report["unique_texts"], report["pairs"]), (8, 6, 2))
+
+        _, rows = pipeline.read_csv(self.fixture / "collection.csv", pipeline.PLAN_FIELDS)
+        expected_pairs = {"包裹送达": ["开心", "惊讶"], "家人出行": ["开心", "悲伤"]}
+        for scene, labels in expected_pairs.items():
+            with self.subTest(scene=scene):
+                scene_rows = [row for row in rows if row["scene"] == scene]
+                singles = [row["intended_label"] for row in scene_rows if not row["pair_id"]]
+                pair = [row for row in scene_rows if row["pair_id"]]
+                self.assertEqual(singles, ["中性", "中性"])
+                self.assertCountEqual([row["intended_label"] for row in pair], labels)
+                for field in ("pair_id", "speaker_id", "text"):
+                    self.assertEqual(pair[0][field], pair[1][field], field)
+        self.assertFalse(any(row.get("human_label") for row in rows))
+
+    def test_swapping_scene_emotions_fails_even_with_same_totals(self):
+        fields, rows = pipeline.read_csv(self.fixture / "collection.csv", pipeline.PLAN_FIELDS)
+        surprised = next(row for row in rows if row["intended_label"] == "惊讶")
+        sad = next(row for row in rows if row["intended_label"] == "悲伤")
+        surprised["intended_label"] = "悲伤"
+        sad["intended_label"] = "惊讶"
+
+        with tempfile.TemporaryDirectory() as temp:
+            project = Path(temp)
+            shutil.copyfile(self.fixture / "config.json", project / "config.json")
+            csv_file(project / "collection.csv", fields, rows)
+            code, report = invoke_pipeline(["check", "--project", temp])
+        self.assertNotEqual(code, 0)
+        self.assertEqual((report["records"], report["unique_texts"], report["pairs"]), (8, 6, 2))
+        missing_quotas = [error["detail"].partition(":")[0] for error in report["errors"]
+                          if error["code"] == "quota_mismatch"]
+        self.assertCountEqual(missing_quotas, ["label_quotas.包裹对照.惊讶", "label_quotas.出行对照.悲伤"])
 
 
 class PipelineTest(unittest.TestCase):
@@ -88,9 +135,7 @@ class PipelineTest(unittest.TestCase):
         args = [command, "--project", str(self.project)]
         if command == "export":
             args += ["--final", str(self.final), "--profile", str(self.profile), "--out", str(self.out)]
-        with contextlib.redirect_stdout(io.StringIO()) as output:
-            code = pipeline.main(args)
-        report = json.loads(output.getvalue())
+        code, report = invoke_pipeline(args)
         self.assertEqual(code == 0, report["ok"])
         return report
 

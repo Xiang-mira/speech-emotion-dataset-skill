@@ -17,6 +17,25 @@
 
 测试使用合成语音与明确标记的模拟意见／预测。实际接收端验证运行于本机，使用已授权读取的固定版本源码及保存预测，证明清单能被该版本读入和回放。听感、模型推理效果及线上生产部署需分别验证。
 
+## 包裹送达与家人出行
+
+本用例保存了在空项目安装 Skill 后，用一句新需求实际生成的[采录清单](fixtures/parcel-and-family-travel/collection.csv)和[配置](fixtures/parcel-and-family-travel/config.json)。8 条均为待录任务，表中情绪为朗读预设。
+
+| 场景 | 独立中性 | 同人同句对照 | 场景合计 |
+|---|---:|---|---:|
+| 包裹送达 | 2 条 | P01 由 S01 读“给妹妹的包裹到了。”，开心、惊讶各 1 条 | 4 条 |
+| 家人出行 | 2 条 | P02 由 S02 读“姐姐上车了。”，开心、悲伤各 1 条 | 4 条 |
+
+在仓库根目录运行以下命令可复验清单。Windows 可将 `python` 换成 `py -3`。
+
+```sh
+python skills/speech-emotion-eval/scripts/pipeline.py check --project evals/fixtures/parcel-and-family-travel
+```
+
+核验得到 8 个唯一编号、8 个不同的 WAV 路径、6 段不同原文和 2 组同人同句对照。另在临时副本中交换 H004 的“惊讶”和 H008 的“悲伤”，全批各情绪的数量保持相同，检查器仍检出包裹对照缺“惊讶”、出行对照缺“悲伤”两项错误。
+
+上述两项均已加入自动化回归。本次运行 `python -m unittest discover -s tests -v`，19 项测试全部通过。
+
 ## 单独体验已有定稿的入口
 
 在项目根目录运行 `python run.py demo`，等工作目录中的六段 WAV 准备好，再按 Ctrl+C 停止服务。然后用附带的模拟定稿验证导出。正式交付请选择实际听审形成的定稿。
